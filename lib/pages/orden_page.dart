@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:tecnicos_cm/main.dart';
 import 'package:tecnicos_cm/pages/ordenes_page.dart';
@@ -63,6 +65,8 @@ class _OrdenPageState extends State<OrdenPage> {
 
   Item valorElegido;
   List<Item> selectList;
+
+  List<Offset> points = [];
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +135,41 @@ class _OrdenPageState extends State<OrdenPage> {
 
                 Expanded(child: _crearSelect(context)),
 
-                Expanded(flex: 8,child: _crearListado(context)),
+                Expanded(flex: 6,child: _crearListado(context)),
+
+                Expanded(
+                  flex: 2,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width/ 1.1,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: GestureDetector(
+                        onPanDown: (details){
+                          this.setState(() {
+                            points.add(details.localPosition);
+                          });
+                        },
+                        onPanUpdate: (details){
+                          this.setState(() {
+                            points.add(details.localPosition);
+                          });
+                        },
+                        onPanEnd: (details){
+                          this.setState(() {
+                            points.add(null);
+                          });
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                          child: CustomPaint(
+                            painter: MyCustomPainter(points: points),
+                          ),
+                        ),
+                      ),
+                  )
+                ),
 
                 Flexible(
                   child: Container(
@@ -262,33 +300,7 @@ class _OrdenPageState extends State<OrdenPage> {
 
 
   Widget _crearSelect(BuildContext context){
-    return /*DropdownButtonHideUnderline(
-        child: ButtonTheme(
-          alignedDropdown: true,
-          child: DropdownButton<Item>(
-            value: valorElegido,
-            iconSize: 30,
-            icon: (null),
-            style: TextStyle(color: Colors.black, fontSize: 15.0),
-            hint: Text("Seleccione Cablemodem"),
-            onChanged: (Item newValue){
-              setState(() {
-                valorElegido = newValue;
-                print(valorElegido.mac);
-
-              });
-            },
-            items: selectList?.map((Item valueItem) {
-              return new DropdownMenuItem(
-                  child: new Text(valueItem.mac),
-                  value: valueItem,
-              );
-            })?.toList() ??
-            [],
-          ),
-        )
-    );
-    */
+    return
       Container(
       child: Card(
         child: ListTile(
@@ -382,4 +394,39 @@ class _OrdenPageState extends State<OrdenPage> {
 
   }
 
+}
+
+class MyCustomPainter extends CustomPainter{
+
+  List<Offset> points;
+
+  MyCustomPainter({this.points});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint background = Paint()..color = Colors.white;
+    Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    canvas.drawRect(rect, background);
+
+    Paint paint = Paint();
+    paint.color = Colors.black;
+    paint.strokeWidth = 2.0;
+    paint.isAntiAlias = true;
+    paint.strokeCap = StrokeCap.round;
+
+    for(int x = 0; x<points.length-1; x++){
+      if(points[x] != null && points[x+1] != null){
+        canvas.drawLine(points[x], points[x+1], paint);
+      } else if(points[x] != null && points[x+1] == null){
+        canvas.drawPoints(PointMode.points, [points[x]], paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    // TODO: implement shouldRepaint
+    return true;
+  }
+  
 }

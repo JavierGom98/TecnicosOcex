@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:tecnicos_cm/main.dart';
-
-List materialesOrdenes;
 
 class EstadisticasPage extends StatefulWidget {
   EstadisticasPage({this.codigoTecnico});
@@ -13,27 +12,47 @@ class EstadisticasPage extends StatefulWidget {
   _EstadisticasPageState createState() => _EstadisticasPageState();
 }
 
-class _EstadisticasPageState extends State<EstadisticasPage> {
-  Map data;
-  List materiales;
+ class Tarea{
+  String dato1;
+  int dato2;
+  Color colorvar;
 
-  getMateriales() async{
+    Tarea(this.dato1, this.dato2, this.colorvar);
+ }
+
+class _EstadisticasPageState extends State<EstadisticasPage> {
+
+  List<charts.Series<Tarea, String>> _seriesPieData;
+
+  getDatos() async{
     String id = codigoTecnico.toString();
     String enlace = "http://ns212.cablebox.co:5510/appmovil/getMateriales.php/?codigoTecnico="+id;
-    http.Response response = await http.get(enlace);
-    var data = json.decode(response.body);
+    //http.Response response = await http.get(enlace);
+    //var data = json.decode(response.body);
     //print(data);
-    setState(() {
-      materiales = data['materiales'];
-    });
+
+    var pieData = [
+      new Tarea('Ordenes Realizadas', 15, Color(0xff22bb33)),
+      new Tarea('Ordenes sin Realizar', 5, Color(0xffbb2124)),
+    ];
+
+    _seriesPieData.add(
+      charts.Series(
+        data: pieData,
+        domainFn: (Tarea tarea,_)=> tarea.dato1,
+        measureFn: (Tarea tarea,_)=> tarea.dato2,
+        colorFn: (Tarea tarea,_)=> charts.ColorUtil.fromDartColor(tarea.colorvar),
+        id: 'Esta es una prueba',
+        labelAccessorFn: (Tarea row,_)=>'${row.dato2}',
+      ),
+    );
   }
 
   @override
   void initState() {
-    getMateriales();
-    setState(() {
-      materialesOrdenes = materiales;
-    });
+    _seriesPieData = List<charts.Series<Tarea, String>>();
+    getDatos();
+
   }
 
   @override
@@ -63,12 +82,10 @@ class _EstadisticasPageState extends State<EstadisticasPage> {
             children: <Widget>[
 
               Container(
-                //margin: EdgeInsets.only(top: 10),
-                //height: 30,
                 width: MediaQuery.of(context).size.width / 1.3,
                 child: Center(
                   child: Text(
-                    "Materiales Disponibles",
+                    "Ordenes Dia",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -78,48 +95,94 @@ class _EstadisticasPageState extends State<EstadisticasPage> {
                 width: MediaQuery.of(context).size.width / 1.2,
                 child: Divider(
                   color: Colors.black,
-                  //height: 36,
                 ),
               ),
 
               Expanded(
-                flex: 5,
-                child: ListView.builder(
-                  padding: const EdgeInsets.only(left: 8),
-                  shrinkWrap: true,
-                  itemCount: materiales == null ? 0 : materiales.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text("${materiales[index]["nombre"]}: ${materiales[index]["cantidad"]}"),
-                    );
-                  },
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    child: charts.PieChart(
+                      _seriesPieData,
+                      animate: true,
+                      animationDuration: Duration(seconds: 3),
+                      behaviors: [
+                        new charts.DatumLegend(
+                            outsideJustification: charts.OutsideJustification.endDrawArea,
+                            horizontalFirst: false,
+                            desiredMaxRows: 2,
+                            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            entryTextStyle: charts.TextStyleSpec(
+                                color: charts.MaterialPalette.purple.shadeDefault,
+                                fontFamily: 'Georgia',
+                                fontSize: 15
+                            )
+                        )
+                      ],
+                      defaultRenderer: new charts.ArcRendererConfig(
+                          arcWidth: 100,
+                          arcRendererDecorators: [
+                            new charts.ArcLabelDecorator(
+                                labelPosition: charts.ArcLabelPosition.inside
+                            )
+                          ]
+                      ),
+                    ),
+                  )
+
+
+              ),
+
+              Container(
+                width: MediaQuery.of(context).size.width / 1.3,
+                child: Center(
+                  child: Text(
+                    "Ordenes Mes",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
 
-              Flexible(
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 1.3,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 30
-                    ),
-                    child: new RaisedButton(
-                      child: new Text(
-                        'Solicitar Materiales',
-                        style: new TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                        ),
-                      ),
-                      color: Colors.blue,
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(10.0)),
-                      onPressed: () {
-
-                      },
-                    ),
-                  ),
+              Container(
+                width: MediaQuery.of(context).size.width / 1.2,
+                child: Divider(
+                  color: Colors.black,
                 ),
+              ),
+
+              Expanded(
+                  child: Container(
+                    width: 300,
+                    height: 300,
+                    child: charts.PieChart(
+                      _seriesPieData,
+                      animate: true,
+                      animationDuration: Duration(seconds: 3),
+                      behaviors: [
+                        new charts.DatumLegend(
+                            outsideJustification: charts.OutsideJustification.endDrawArea,
+                            horizontalFirst: false,
+                            desiredMaxRows: 2,
+                            cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                            entryTextStyle: charts.TextStyleSpec(
+                                color: charts.MaterialPalette.purple.shadeDefault,
+                                fontFamily: 'Georgia',
+                                fontSize: 15
+                            )
+                        )
+                      ],
+                      defaultRenderer: new charts.ArcRendererConfig(
+                          arcWidth: 100,
+                          arcRendererDecorators: [
+                            new charts.ArcLabelDecorator(
+                                labelPosition: charts.ArcLabelPosition.inside
+                            )
+                          ]
+                      ),
+                    ),
+                  )
+
+
               )
 
             ],

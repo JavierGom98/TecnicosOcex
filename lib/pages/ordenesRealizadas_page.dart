@@ -5,11 +5,11 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:tecnicos_cm/main.dart';
 
-String idOrden = '';
-String direccionOrden = '';
-String nombresApellidos = '';
-String identificacionAbon = '';
-String actividadNombre = '';
+String idOrdenR = '';
+String direccionOrdenR = '';
+String nombresApellidosR = '';
+String identificacionAbonR = '';
+String actividadNombreR = '';
 
 class OrdenesRealizadasPage extends StatefulWidget {
   OrdenesRealizadasPage({this.codigoTecnico});
@@ -24,24 +24,26 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
 
   getOrdenes() async{
     String id = codigoTecnico.toString();
-    String enlace = "http://ns212.cablebox.co:5510/appmovil/getOrdenes.php/?codigoTecnico="+id;
+    String enlace = "http://ns212.cablebox.co:5510/appmovil/getOrdenesRealizadas.php/?codigoTecnico="+id;
     http.Response response = await http.get(enlace);
     var data = json.decode(response.body);
     setState(() {
       ordenes = data['ordenes'];
-
     });
   }
 
-  void presionarCardOrden(String idOrd, String dir, String nomApe, String idenAbon, String actName){
+  void presionarCardOrdenR(String idOrd, String dir, String nomApe, String idenAbon, String actName){
     setState(() {
-      idOrden = idOrd;
-      direccionOrden = dir;
-      nombresApellidos = nomApe;
-      actividadNombre = idenAbon;
-      identificacionAbon = actName;
+      idOrdenR = idOrd;
+      direccionOrdenR = dir;
+      nombresApellidosR = nomApe;
+      actividadNombreR = idenAbon;
+      identificacionAbonR = actName;
     });
-    //Navigator.pushReplacementNamed(context, '/orden_page');
+    /*print(idOrdenR);
+    print(direccionOrdenR);
+    print(nombresApellidosR);*/
+    Navigator.pushReplacementNamed(context, '/ordenRealizada_page');
   }
 
   @override
@@ -110,6 +112,8 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10.0),
+                              border: Border.all(color: Colors.green, width: 2),
+
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(top: 5, right: 5, bottom: 5, left: 10),
@@ -133,7 +137,7 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
                             )
                         ),
                         onTap: (){
-                          presionarCardOrden(ordenes[index]["id_orden"], ordenes[index]["direccion"], ordenes[index]["nombres"] + " " + ordenes[index]["apellidos"], ordenes[index]["actividad_name"], ordenes[index]["num_identidad_abonado"]);
+                          presionarCardOrdenR(ordenes[index]["id_orden"], ordenes[index]["direccion"], ordenes[index]["nombres"] + " " + ordenes[index]["apellidos"], ordenes[index]["actividad_name"], ordenes[index]["num_identidad_abonado"]);
                         },
                       );
                     },

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:tecnicos_cm/pages/ordenRealizada_page.dart';
 import 'package:tecnicos_cm/pages/orden_page.dart';
+import 'package:tecnicos_cm/pages/ordenesRealizadas_page.dart';
 import 'package:tecnicos_cm/pages/ordenes_page.dart';
 import 'package:tecnicos_cm/pages/tab_page.dart';
 import 'package:flutter_session/flutter_session.dart';
@@ -36,7 +38,8 @@ class LoginApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/login_page': (BuildContext context) => new LoginPage(),
         '/tab_page' : (BuildContext context) => new TabPage(codigoTecnico: codigoTecnico,nombreTecnico: nombreTecnico, cargoTecnico: cargoTecnico,),
-        '/orden_page' : (BuildContext context) => new OrdenPage(idOrden: idOrden, direccionOrden: direccionOrden, nombresApellidos: nombresApellidos, identificacionAbon: identificacionAbon, actividadNombre: actividadNombre,)
+        '/orden_page' : (BuildContext context) => new OrdenPage(idOrden: idOrden, direccionOrden: direccionOrden, nombresApellidos: nombresApellidos, identificacionAbon: identificacionAbon, actividadNombre: actividadNombre,),
+        '/ordenRealizada_page' : (BuildContext context) => new OrdenRealizadaPage(idOrden: idOrdenR, direccionOrden: direccionOrdenR, nombresApellidos: nombresApellidosR, identificacionAbon: identificacionAbonR, actividadNombre: actividadNombreR,)
       },
     );
   }
