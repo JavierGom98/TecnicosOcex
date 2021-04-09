@@ -56,10 +56,16 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController controllerUser = new TextEditingController();
   TextEditingController controllerPass = new TextEditingController();
 
-  String mensaje = '';
+  //String mensaje = '';
+
+  String errorPass = null;
+  String errorUser = null;
+  Icon iconViewPass = new Icon(Icons.remove_red_eye);
+  bool verContra = true;
+
 
   Future login() async{
-    http.Response response = await http.post("http://ns212.cablebox.co:5510/appmovil/iniciarsesion.php",
+    /*http.Response response = await http.post("http://ns212.cablebox.co:5510/appmovil/iniciarsesion.php",
         body: {
           "username": controllerUser.text
         });
@@ -85,8 +91,85 @@ class _LoginPageState extends State<LoginPage> {
         nombreTecnico = datauser[0]['nombre'];
         cargoTecnico = datauser[0]['cargo'];
       });
+    }*/
+    errorPass = null;
+    errorUser = null;
+    if(controllerUser.text == '' || controllerPass.text == ''){
+      if(controllerUser.text == ''){
+        setState(() {
+          errorUser = "Campo Vacio";
+        });
+      }
+      if(controllerPass.text == ''){
+        setState(() {
+          errorPass = "Campo Vacio";
+        });
+      }
+    }else{
+      http.Response response = await http.post("http://ns212.cablebox.co:5510/appmovil/iniciarsesion.php",
+          body: {
+            "username": controllerUser.text
+          });
+
+      var datauser = json.decode(response.body);
+      errorUser = null;
+      if(datauser[0]['tecnico'] == 'No se encontro registros en BD'){
+        setState(() {
+          errorUser = "Usuario Incorrecto";
+        });
+      }else{
+        if(datauser[0]['password'] == controllerPass.text){
+          errorPass = null;
+          await FlutterSession().set('token', controllerUser.text);
+          Navigator.pushReplacementNamed(context, '/tab_page');
+        }else{
+          setState(() {
+            errorPass = "Contraseña Incorrecta";
+          });
+        }
+        setState(() {
+          codigoTecnico =  int.parse(datauser[0]['id_empleado']);
+          nombreTecnico = datauser[0]['nombre'];
+          cargoTecnico = datauser[0]['cargo'];
+        });
+      }
     }
   }
+
+  Future viewPass() async{
+    Icon icon = new Icon(Icons.remove_red_eye);
+    bool bolean = true;
+    //debugPrint(iconViewPass.icon.toString());
+    if(iconViewPass.icon.toString() == 'IconData(U+0E974)'){
+      icon = new Icon(Icons.remove_red_eye_outlined);
+      bolean = false;
+    }
+    setState(() {
+      iconViewPass = icon;
+      verContra = bolean;
+    });
+  }
+
+  Future controlInputUser(text) async{
+    setState(() {
+      if(text == ''){
+        errorUser = "Campo Vacio";
+      }else{
+        errorUser = null;
+      }
+    });
+  }
+
+  Future controlInputPass(text) async{
+    setState(() {
+      if(text == ''){
+        errorPass = "Campo Vacio";
+      }else{
+        errorPass = null;
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +192,15 @@ class _LoginPageState extends State<LoginPage> {
               height: MediaQuery.of(context).size.height / 1.3,
               width: MediaQuery.of(context).size.width /1.1,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
+                  borderRadius: BorderRadius.circular(5.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 5), // changes position of shadow
+                    ),
+                  ],
                   image: DecorationImage(
                       image: AssetImage('assets/images/fondo_blue.jpg'),
                       fit: BoxFit.cover
@@ -126,8 +217,8 @@ class _LoginPageState extends State<LoginPage> {
                       children: <Widget>[
                         Flexible(
                           child: Container(
-                            height: MediaQuery.of(context).size.height/3,
-                            width: MediaQuery.of(context).size.width/1.6,
+                            height: MediaQuery.of(context).size.height/1,
+                            width: MediaQuery.of(context).size.width/1.5,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image: AssetImage('assets/images/logo_azul.png'),
@@ -141,9 +232,10 @@ class _LoginPageState extends State<LoginPage> {
                           child: Container(
                             height: MediaQuery.of(context).size.height/2,
                             width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                             child: Column(
                               children: <Widget>[
-
+                                /*
                                 Container(
 
                                     width: MediaQuery.of(context).size.width / 1.2,
@@ -156,7 +248,6 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     )
                                 ),
-
                                 Container(
                                   height: 30,
                                   width: MediaQuery.of(context).size.width / 1.3,
@@ -164,7 +255,30 @@ class _LoginPageState extends State<LoginPage> {
                                     controller: controllerUser,
                                   ),
                                 ),
+                                  */
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 10.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    controller: controllerUser,
+                                    cursorColor: Theme.of(context).cursorColor,
+                                    decoration: InputDecoration(
+                                      labelText: 'Usuario',
+                                      errorText: errorUser,
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFF4B4B4D),
+                                      ),
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    onChanged: (text) {
+                                      controlInputUser(text);
+                                    },
+                                  ),
+                                ),
 
+                                /*
                                 Container(
                                     width: MediaQuery.of(context).size.width / 1.2,
                                     child: Padding(
@@ -176,7 +290,6 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     )
                                 ),
-
                                 Container(
                                   height: 30,
                                   width: MediaQuery.of(context).size.width / 1.3,
@@ -185,8 +298,56 @@ class _LoginPageState extends State<LoginPage> {
                                     obscureText: true,
                                   ),
                                 ),
-
+                                */
                                 Container(
+                                  margin: const EdgeInsets.only(bottom: 10.0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                  child: TextFormField(
+                                    controller: controllerPass,
+                                    cursorColor: Theme.of(context).cursorColor,
+                                    decoration: InputDecoration(
+                                      labelText: 'Contraseña',
+                                      errorText: errorPass,
+                                      labelStyle: TextStyle(
+                                        color: Color(0xFF4B4B4D),
+                                      ),
+                                      border: OutlineInputBorder(),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          viewPass();
+                                        },
+                                        icon: iconViewPass,
+                                      ),
+                                    ),
+                                    obscureText: verContra,
+                                    onChanged: (text) {
+                                      controlInputPass(text);
+                                    },
+                                  ),
+                                ),
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 1.3,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20
+                                    ),
+                                    child: new ElevatedButton(
+                                      child: new Text(
+                                        'Iniciar',
+                                        style: new TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        login();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                /*Container(
                                   width: MediaQuery.of(context).size.width / 1.3,
                                   child: Padding(
                                     padding: const EdgeInsets.only(
@@ -208,8 +369,8 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     ),
                                   ),
-                                ),
-
+                                ),*/
+                                /*
                                 Container(
                                   width: MediaQuery.of(context).size.width / 1.3,
                                   child: Center(
@@ -219,7 +380,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
 
-                                )
+                                )*/
                               ],
                             ),
                           ),

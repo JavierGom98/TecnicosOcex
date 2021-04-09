@@ -18,11 +18,13 @@ class TabPage extends StatefulWidget {
 class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
   TabController tabController;
   List<Tab> myTabs = <Tab>[
-    new Tab(icon: Icon(Icons.home),),
+    //new Tab(icon: Icon(Icons.home),),
+    new Tab(icon: Icon(Icons.comment_bank_outlined),),
     new Tab(icon: Icon(Icons.domain_verification),),
     new Tab(icon: Icon(Icons.leaderboard),),
     new Tab(icon: Icon(Icons.construction),),
-    new Tab(icon: Icon(Icons.dehaze),)
+    //new Tab(icon: Icon(Icons.dehaze),)
+    new Tab(icon: Icon(Icons.portrait),)
   ];
 
   @override
@@ -46,9 +48,12 @@ class _TabPageState extends State<TabPage> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: Text("Tecnicos"),
-        backgroundColor: Colors.black54,
+        //title: Text("Tecnicos"),
+        title: Image.asset('assets/images/Ocex.png', width: 150, fit: BoxFit.fitWidth,),
+        //backgroundColor: Colors.black54,
+        backgroundColor: Color(0xFF0277bc),
         bottom: new TabBar(
+          indicatorColor: Colors.white,
           tabs: myTabs,
           controller: tabController,
         ),

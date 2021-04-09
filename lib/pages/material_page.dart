@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:async';
@@ -84,16 +85,21 @@ class _MaterialesPageState extends State<MaterialesPage> {
 
                 Expanded(
                   flex: 5,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(left: 8),
-                    shrinkWrap: true,
-                    itemCount: materiales == null ? 0 : materiales.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        title: Text("${materiales[index]["nombre"]}: ${materiales[index]["cantidad"]}"),
-                      );
-                    },
+
+                  child: Scrollbar(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(left: 8),
+                      shrinkWrap: true,
+                      itemCount: materiales == null ? 0 : materiales.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ListTile(
+                          title: Text("${materiales[index]["nombre"]}: ${materiales[index]["cantidad"]}"),
+                        );
+                      },
+
+                    ),
                   ),
+
                 ),
 
                 Flexible(

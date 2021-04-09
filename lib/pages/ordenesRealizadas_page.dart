@@ -40,9 +40,6 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
       actividadNombreR = idenAbon;
       identificacionAbonR = actName;
     });
-    /*print(idOrdenR);
-    print(direccionOrdenR);
-    print(nombresApellidosR);*/
     Navigator.pushReplacementNamed(context, '/ordenRealizada_page');
   }
 
@@ -61,38 +58,45 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Colors.black26, Colors.white60],
+                //colors: [Colors.black26, Colors.white60],
+                colors: [Colors.white, Colors.white],
               )
           ),
           child: Container(
             width: MediaQuery.of(context).size.width / 1.2,
             height: MediaQuery.of(context).size.height / 1.2,
-            margin: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+            //margin: EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
 
-                FutureBuilder(
+                /*FutureBuilder(
                     future: FlutterSession().get('token'),
                     builder: (context, snapshot){
                       return Text(snapshot.hasData ? snapshot.data.toString() : 'Cargando');
                     }
-                ),
+                ),*/
 
                 Container(
-                  width: MediaQuery.of(context).size.width / 1.3,
+                  //width: MediaQuery.of(context).size.width / 1.3,
+                  width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10.0),
+                    //color: Colors.white,
+                    color: Color(0xFFd1d1d1),
+                    //borderRadius: BorderRadius.circular(10.0),
+                    border: new Border(
+                      bottom: BorderSide(width: 1, color: Color(0xFFadadad)),
+                    ),
                   ),
+                  padding: EdgeInsets.fromLTRB(4, 4, 4, 4),
                   child: Center(
                     child: Text(
                       "Ordenes Realizadas",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF636363)),
                     ),
                   ),
                 ),
-
+                /*
                 Container(
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Divider(
@@ -100,7 +104,48 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
                     //height: 36,
                   ),
                 ),
+                */
+                Expanded(
+                  flex: 8,
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: ordenes == null ? 0 : ordenes.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Ink (
+                        padding: const EdgeInsets.only(top: 0, right: 0, bottom: 0, left: 0),
+                        height: 82,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                        ),
+                        child: new ListTile(
+                          title: Text("${ordenes[index]["fijo"]} - ${ordenes[index]["celular"]}"),
+                          isThreeLine: true,
+                          subtitle: Text("${ordenes[index]["direccion"]}\n${ordenes[index]["actividad_name"]}"),
 
+                          trailing: Container(
+                            width: 50,
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.check_circle,
+                              color: Color(0xFF378f4d),
+                              size: 25.0,
+                            ),
+                          ),
+
+                          onTap: (){
+                            presionarCardOrdenR(ordenes[index]["id_orden"], ordenes[index]["direccion"], ordenes[index]["nombres"] + " " + ordenes[index]["apellidos"], ordenes[index]["actividad_name"], ordenes[index]["num_identidad_abonado"]);
+                          },
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) => Divider(
+                      height: 0,
+                      color: Color(0xFF707070),
+                    ),
+                  ),
+                )
+                /*
                 Expanded(
                   flex: 6,
                   child: ListView.builder(
@@ -143,6 +188,7 @@ class _OrdenesRealizadasPageState extends State<OrdenesRealizadasPage> {
                     },
                   ),
                 )
+                */
               ],
             ),
 
